@@ -1,0 +1,3 @@
+.vagrant
+*.log
+app/node_modules*
