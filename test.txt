@@ -1,4 +1,0 @@
-dev_* testing
-testing new jenkins job leo-cd
-testing using sparta node
-post-build actions git publisher trying
