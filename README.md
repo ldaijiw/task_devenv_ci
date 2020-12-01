@@ -7,6 +7,7 @@ This repository contains a development environment that can be copied and setup 
 - Virtual Box
 - Vagrant
 - Ruby
+    - Bundler
 
 
 ## Instructions
