@@ -67,7 +67,9 @@ Making a new branch, ``B``, will copy all the files/directories in the current b
 
 In general whatever code is on the ``main`` branch is used in the live environment, i.e. the code being used in the service/product that is deployed to customers. Therefore, any changes that are made on the ``main`` branch should be rigorously tested to ensure everything is functioning correctly and there is no downtime which could result in lost business.
 
-For this project a ``development_env`` branch has been set up from which other branches for specific features can be merged into, as a buffer before merging directly to ``main``. Any new branches can be made from ``development_env`` with the naming convention: ``dev_<new_feature>`` (**THIS NAMING CONVENTION IS ESSENTIAL FOR THE CORRECT CONFIGURATION OF JENKINS**)
+For this project a ``development_env`` branch has been set up from which other branches for specific features can be merged into, as a buffer before merging directly to ``main``.
+
+Any new branches can be made from ``development_env`` with the naming convention: ``dev_<new_feature>`` (**THIS NAMING CONVENTION IS ESSENTIAL FOR THE CORRECT CONFIGURATION OF JENKINS**)
 
 - First ensure that the current branch is ``development_env``
 ```bash
@@ -130,7 +132,20 @@ ssh-keygen -t ed25519
 - Add the public key (file with ``.pub`` extension) to Jenkins by _adding a key_
 ![](images/jenkins_credentials.png)
 
-- **Branches to build**: specify which branch to build, (e.g. ``*/main``)
+- **Branches to build**: specify which branch to build with ``dev_*``, for this project any branch to be built should have the naming convention ``dev_<new_feature>``
+
+### Build Environment
+
+- **Provide Node & npm bin/folder to PATH**: This must be checked as ``npm`` tests are run on the Sample app
+
+### Build
+
+Add a build step with _Add build step_-->_Execute shell_ with the following lines of code to execute the tests
+```bash
+cd code/app
+npm install
+npm test
+```
 
 ### Build Triggers
 
@@ -148,21 +163,45 @@ In the GitHub repository that is to be linked to Jenkins, create a new Webhook (
 - **Content type**: Select ``application/json``
 
 Any new pushes to the repository should now trigger a new build, shown in _Build History_ where the _Console Output_ can be read for each individual build
+
+### Setting Up Jenkins Job to Merge Code
+
+Create another new _Freestyle Project_ in Jenkins with the following differences in settings
+
+**Source Code Management: Additional Behaviours**
+
+Create an additional behaviour with _Additional Behaviours_-->_Add_-->_Merge before build_ with the following settings:
+- _Name of repository_: origin
+- _Branch to merge to_: development_env
+- _Merge strategy_: default
+- _Fast-forward mode_: -ff
+
+**Build Triggers: Triggers from Stable Builds of Other Projects**
+
+Instead of selecting the GitHub trigger, select _Build after other projects are built_ with the following settings:
+- _Projects to watch_: <name_of_first_job>
+- _Trigger only if build is stable_
+
+**Node/npm PATH and Build Steps are Both not Needed**
+
+**Post-build Actions**
+
+Add a post-build action with _Add post-build action_-->_Git Publisher_ with the following settings:
+- _Push Only If Build Succeeds_
+- _Merge Results_
+
 ### Setting Up Jenkins and MS Teams
 
-### Jenkins and Git Branching
+Both Jenkins jobs can be configured to send notifications of successful/failed builds via MS Teams
 
-```bash
-git remote show origin
+In the teams channel that is to be used to receive Jenkins notifications, create a new connector
 
-* remote origin
-  Fetch URL: https://github.com/user/repo.git
-  Push  URL: https://github.com/user/repo.git
-  HEAD branch: main
-  Remote branch:
-    main tracked
-  Local branch configured for 'git pull':
-    main merges with remote main
-  Local ref configured for 'git push':
-    main pushes to main (up to date)
-```
+![](images/connector.png)
+
+Configure a new Jenkins connector and enter a name for the connection
+
+Copy the URL and create a new webhook in Jenkins via _Office 365 Connector_-->_Add Webhook_, and paste the URL and name used for the connector in the relevant fields
+
+If both Jobs are configured in this way, a new GitHub push that passes all tests should result in two success messages from Jenkins
+
+![](images/jenkins_teams.png)
