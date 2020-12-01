@@ -102,15 +102,17 @@ If anything fails, Jenkins provides feedback to the Dev team so they can make an
 
 Create a new Item in Jenkins, for now selecting _Freestyle Project_, where there are several settings to configure
 
-### General
+**General**
+
 - **Description**: optional
 - **Discard old builds**: turn on with 2 (optional) max number of builds to keep
 - **GitHub project**: project url (e.g. ``https://github.com/user/repo_name``)
 
-### Office 365 Connector
+**Office 365 Connector**
+
 - **Restrict where this project can be run**: logical expression to specify which agent to execute builds of the project (e.g. ``sparta-ubuntu-node``)
 
-### Source Code Management
+**Source Code Management**
 
 Select **Git**, this is where the connection to the GitHub repository can be configured
 
@@ -134,11 +136,11 @@ ssh-keygen -t ed25519
 
 - **Branches to build**: specify which branch to build with ``dev_*``, for this project any branch to be built should have the naming convention ``dev_<new_feature>``
 
-### Build Environment
+**Build Environment**
 
 - **Provide Node & npm bin/folder to PATH**: This must be checked as ``npm`` tests are run on the Sample app
 
-### Build
+**Build**
 
 Add a build step with _Add build step_-->_Execute shell_ with the following lines of code to execute the tests
 ```bash
@@ -147,7 +149,7 @@ npm install
 npm test
 ```
 
-### Build Triggers
+**Build Triggers**
 
 - **GitHub hook trigger for GITScm polling**: Check this option to trigger Jenkins to build when detecting pushes from the GitHub repository
 
