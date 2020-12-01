@@ -196,7 +196,7 @@ Both Jenkins jobs can be configured to send notifications of successful/failed b
 
 In the teams channel that is to be used to receive Jenkins notifications, create a new connector
 
-![](images/connector.png)
+![](images/connectors.png)
 
 Configure a new Jenkins connector and enter a name for the connection
 
