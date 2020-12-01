@@ -13,6 +13,7 @@ app.get('/' , function(req , res){
   res.render("index");
 
 });
+
 // connect to database
 if(process.env.DB_HOST) {
   mongoose.connect(process.env.DB_HOST);
