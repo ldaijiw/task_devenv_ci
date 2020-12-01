@@ -58,7 +58,45 @@ rake spec
 
 If the app is configured correctly, these should all pass.
 
-## Setting Up a Job in Jenkins
+
+### Branching with GitHub
+
+Branching is an extremely useful tool in GitHub to enable developers to write new code and utilise the source control management that GitHub offers without having to worry about potentially breaking whatever code is currently live.
+
+Making a new branch, ``B``, will copy all the files/directories in the current branch, ``A``, and changes to code can be made and tested safely in ``B``. If the new feature is approved, it can be _merged_ back into ``A`` where the new code is safely added and integrated.  
+
+In general whatever code is on the ``main`` branch is used in the live environment, i.e. the code being used in the service/product that is deployed to customers. Therefore, any changes that are made on the ``main`` branch should be rigorously tested to ensure everything is functioning correctly and there is no downtime which could result in lost business.
+
+For this project a ``development_env`` branch has been set up from which other branches for specific features can be merged into, as a buffer before merging directly to ``main``. Any new branches can be made from ``development_env`` with the naming convention: ``dev_<new_feature>`` (**THIS NAMING CONVENTION IS ESSENTIAL FOR THE CORRECT CONFIGURATION OF JENKINS**)
+
+- First ensure that the current branch is ``development_env``
+```bash
+git checkout development_env
+```
+- And that it is up to date
+```bash
+git pull
+```
+- Create a new branch
+```bash
+git checkout -b dev_<new_feature>
+```
+
+## Setting Up Jenkins
+
+Jenkins can be set up to receive any code changes from a Github repository via a webhook (_any changes are set up to be automatically sent to Jenkins, rather than Jenkins constantly checking for changes_)
+
+Jenkins then sends the code to an _Agent Node_ (i.e. the testing environment) where the code is
+- Setup
+- Tested
+
+If anything fails, Jenkins provides feedback to the Dev team so they can make any necessary changes.
+
+**In this project, two jobs are set up in Jenkins:**
+
+- The first is used to run tests on the app to ensure everything is running correctly
+- If the tests all pass, the second job is then triggered to merge to the development branch on GitHub
+- An optional extra configuration is to set up Jenkins to report the status of the job (i.e. success or failure) on Microsoft Teams
 
 Create a new Item in Jenkins, for now selecting _Freestyle Project_, where there are several settings to configure
 
